@@ -126,20 +126,20 @@ func (t *handshakeTransport) readPacket() ([]byte, error) {
 		return nil, t.readError
 	}
 
-	//сомнительная попытка вставить проверку Cbc если работает
-	fmt.Printf("Roy: packet got is %d\n", p[0])
-	if CbcEnabled {
-		for {
-			if p[0] != msgIgnore {
-				break
-			}
-			fmt.Println("Roy: Catched place 10!!!")
-			p, ok = <-t.incoming
-			if !ok {
-				return nil, t.readError
-			}
-		}
-	}
+	// //сомнительная попытка вставить проверку Cbc если работает
+	// fmt.Printf("Roy: packet got is %d\n", p[0])
+	// if CbcEnabled {
+	// 	for {
+	// 		if p[0] != msgIgnore {
+	// 			break
+	// 		}
+	// 		fmt.Println("Roy: Catched place 10!!!")
+	// 		p, ok = <-t.incoming
+	// 		if !ok {
+	// 			return nil, t.readError
+	// 		}
+	// 	}
+	// }
 	return p, nil
 }
 
@@ -470,6 +470,7 @@ func (t *handshakeTransport) server(kex kexAlgorithm, algs *algorithms, magics *
 }
 
 func (t *handshakeTransport) client(kex kexAlgorithm, algs *algorithms, magics *handshakeMagics) (*kexResult, error) {
+	fmt.Println("Roy: Catched place 10!!!")
 	result, err := kex.Client(t.conn, t.config.Rand, magics)
 	if err != nil {
 		return nil, err

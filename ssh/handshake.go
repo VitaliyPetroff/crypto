@@ -121,16 +121,24 @@ func (t *handshakeTransport) id() string {
 }
 
 func (t *handshakeTransport) readPacket() ([]byte, error) {
-	for {
-		p, ok := <-t.incoming
-		if !ok {
-			return nil, t.readError
+	p, ok := <-t.incoming
+	if !ok {
+		return nil, t.readError
+	}
+
+	//сомнительная попытка вставить проверку Cbc если работает
+	fmt.Printf("Roy: packet got is %d\n", p[0])
+	if CbcEnabled {
+		for {
+			if p[0] != msgIgnore {
+				break
+			}
+			fmt.Println("Roy: Catched place 10!!!")
+			p, ok := <-t.incoming
+			if !ok {
+				return nil, t.readError
+			}
 		}
-		//сомнительная попытка вставить проверку Cbc если работает
-		if p[0] != msgIgnore {
-			break
-		}
-		fmt.Println("Roy: Catched place 10!!!")
 	}
 	return p, nil
 }

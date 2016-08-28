@@ -149,6 +149,7 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 	marshalInt(K, kInt)
 	h.Write(K)
 
+	fmt.Println("Roy: Kex good exit!!!")
 	return &kexResult{
 		H:         h.Sum(nil),
 		K:         K,

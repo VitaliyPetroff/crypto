@@ -193,7 +193,6 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 	t.mu.Lock()
 
 	firstKex := t.sessionID == nil
-
 	err = t.enterKeyExchangeLocked(p)
 	if err != nil {
 		// drop connection
@@ -360,12 +359,13 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	}
 	myInit, myInitPacket, err := t.sendKexInitLocked(subsequentKeyExchange)
 	if err != nil {
-		fmt.Println("Roy: Catched place 04!!!")
+		fmt.Println("Roy: Catched place 05_1!!!")
 		return err
 	}
 
 	otherInit := &kexInitMsg{}
 	if err := Unmarshal(otherInitPacket, otherInit); err != nil {
+		fmt.Println("Roy: Catched place 05_2!!!")
 		return err
 	}
 
@@ -388,6 +388,7 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 
 	algs, err := findAgreedAlgorithms(clientInit, serverInit)
 	if err != nil {
+		fmt.Println("Roy: Catched place 05_3!!!")
 		return err
 	}
 
@@ -396,6 +397,7 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 		// other side sent a kex message for the wrong algorithm,
 		// which we have to ignore.
 		if _, err := t.conn.readPacket(); err != nil {
+			fmt.Println("Roy: Catched place 05_4!!!")
 			return err
 		}
 	}
@@ -413,6 +415,7 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	}
 
 	if err != nil {
+		fmt.Println("Roy: Catched place 05_5!!!")
 		return err
 	}
 
@@ -423,12 +426,14 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 
 	t.conn.prepareKeyChange(algs, result)
 	if err = t.conn.writePacket([]byte{msgNewKeys}); err != nil {
+		fmt.Println("Roy: Catched place 05_6!!!")
 		return err
 	}
 	if packet, err := t.conn.readPacket(); err != nil {
+		fmt.Println("Roy: Catched place 05_7!!!")
 		return err
 	} else if packet[0] != msgNewKeys {
-		fmt.Println("Roy: Catched place 03!!!")
+		fmt.Println("Roy: Catched place 05_8!!!")
 		return unexpectedMessageError(msgNewKeys, packet[0])
 	}
 

@@ -359,6 +359,7 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	}
 	myInit, myInitPacket, err := t.sendKexInitLocked(subsequentKeyExchange)
 	if err != nil {
+		fmt.Println("Roy: Catched place 04!!!")
 		return err
 	}
 

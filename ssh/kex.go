@@ -111,6 +111,22 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 		return nil, err
 	}
 
+	//сомнительная попытка вставить проверку Cbc если работает
+	fmt.Printf("Roy: packet got is %d\n", packet[0])
+	if CbcEnabled {
+		for {
+			if packet[0] != msgIgnore {
+				break
+			}
+			fmt.Println("Roy: Catched place 10!!!")
+			packet, err = c.readPacket()
+			if err != nil {
+				fmt.Println("Roy: Catched place 11_3!!!")
+				return nil, err
+			}
+		}
+	}
+
 	var kexDHReply kexDHReplyMsg
 	if err = Unmarshal(packet, &kexDHReply); err != nil {
 		fmt.Println("Roy: Catched place 11_4!!!")

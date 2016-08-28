@@ -263,6 +263,7 @@ func (t *handshakeTransport) sendKexInit(isFirst keyChangeCategory) error {
 		if packet, err := t.readPacket(); err != nil {
 			return err
 		} else if packet[0] != msgNewKeys {
+			fmt.Println("Roy: Catched place 02!!!")
 			return unexpectedMessageError(msgNewKeys, packet[0])
 		}
 	}
@@ -425,6 +426,7 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	if packet, err := t.conn.readPacket(); err != nil {
 		return err
 	} else if packet[0] != msgNewKeys {
+		fmt.Println("Roy: Catched place 03!!!")
 		return unexpectedMessageError(msgNewKeys, packet[0])
 	}
 

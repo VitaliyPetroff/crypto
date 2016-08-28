@@ -473,21 +473,25 @@ func (t *handshakeTransport) client(kex kexAlgorithm, algs *algorithms, magics *
 	fmt.Println("Roy: Catched place 10!!!")
 	result, err := kex.Client(t.conn, t.config.Rand, magics)
 	if err != nil {
+		fmt.Println("Roy: Catched place 10_1!!!")
 		return nil, err
 	}
 
 	hostKey, err := ParsePublicKey(result.HostKey)
 	if err != nil {
+		fmt.Println("Roy: Catched place 10_2!!!")
 		return nil, err
 	}
 
 	if err := verifyHostKeySignature(hostKey, result); err != nil {
+		fmt.Println("Roy: Catched place 10_3!!!")
 		return nil, err
 	}
 
 	if t.hostKeyCallback != nil {
 		err = t.hostKeyCallback(t.dialAddress, t.remoteAddr, hostKey)
 		if err != nil {
+			fmt.Println("Roy: Catched place 10_4!!!")
 			return nil, err
 		}
 	}

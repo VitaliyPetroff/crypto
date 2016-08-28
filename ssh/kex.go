@@ -136,7 +136,7 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 
 	kInt, err := group.diffieHellman(kexDHReply.Y, x)
 	if err != nil {
-		fmt.Println("Roy: Catched place 11_5!!!")
+		fmt.Println("Roy: Catched place 11_X!!!")
 		return nil, err
 	}
 

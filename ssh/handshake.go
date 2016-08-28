@@ -496,5 +496,6 @@ func (t *handshakeTransport) client(kex kexAlgorithm, algs *algorithms, magics *
 		}
 	}
 
+	fmt.Println("Roy: Client good exit!!!")
 	return result, nil
 }

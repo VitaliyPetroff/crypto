@@ -118,7 +118,7 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 			if packet[0] != msgIgnore {
 				break
 			}
-			fmt.Println("Roy: Catched place 10!!!")
+			fmt.Println("Roy: Catched place 11_5!!!")
 			packet, err = c.readPacket()
 			if err != nil {
 				fmt.Println("Roy: Catched place 11_3!!!")
@@ -126,6 +126,7 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 			}
 		}
 	}
+	fmt.Printf("Roy: packet got is %d\n", packet[0])
 
 	var kexDHReply kexDHReplyMsg
 	if err = Unmarshal(packet, &kexDHReply); err != nil {

@@ -11,10 +11,10 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"errors"
+	"fmt"
+	"golang.org/x/crypto/curve25519"
 	"io"
 	"math/big"
-
-	"golang.org/x/crypto/curve25519"
 )
 
 const (
@@ -90,8 +90,10 @@ func (group *dhGroup) diffieHellman(theirPublic, myPrivate *big.Int) (*big.Int, 
 func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handshakeMagics) (*kexResult, error) {
 	hashFunc := crypto.SHA1
 
+	fmt.Println("Roy: Catched place 11!!!")
 	x, err := rand.Int(randSource, group.p)
 	if err != nil {
+		fmt.Println("Roy: Catched place 11_1!!!")
 		return nil, err
 	}
 	X := new(big.Int).Exp(group.g, x, group.p)
@@ -99,21 +101,25 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 		X: X,
 	}
 	if err := c.writePacket(Marshal(&kexDHInit)); err != nil {
+		fmt.Println("Roy: Catched place 11_2!!!")
 		return nil, err
 	}
 
 	packet, err := c.readPacket()
 	if err != nil {
+		fmt.Println("Roy: Catched place 11_3!!!")
 		return nil, err
 	}
 
 	var kexDHReply kexDHReplyMsg
 	if err = Unmarshal(packet, &kexDHReply); err != nil {
+		fmt.Println("Roy: Catched place 11_4!!!")
 		return nil, err
 	}
 
 	kInt, err := group.diffieHellman(kexDHReply.Y, x)
 	if err != nil {
+		fmt.Println("Roy: Catched place 11_5!!!")
 		return nil, err
 	}
 

@@ -410,8 +410,10 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	var result *kexResult
 	if len(t.hostKeys) > 0 {
 		result, err = t.server(kex, algs, &magics)
+		fmt.Println("Roy: Catched place 05_5_1!!!")
 	} else {
 		result, err = t.client(kex, algs, &magics)
+		fmt.Println("Roy: Catched place 05_5_2!!!")
 	}
 
 	if err != nil {

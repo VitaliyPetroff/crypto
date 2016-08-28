@@ -197,6 +197,7 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 	err = t.enterKeyExchangeLocked(p)
 	if err != nil {
 		// drop connection
+		fmt.Println("Roy: Catched place 05!!!")
 		t.conn.Close()
 		t.writeError = err
 	}

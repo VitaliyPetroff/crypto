@@ -14,10 +14,14 @@ import (
 	"sync"
 )
 
+// support cbc, if set, support csc enabled.
+// All servers SSH_MSG_IGNORE messages will be ignored
+var CbcEnabled = true
+
 // debugHandshake, if set, prints messages sent and received.  Key
 // exchange messages are printed as if DH were used, so the debug
 // messages are wrong when using ECDH.
-const debugHandshake = false
+const debugHandshake = true
 
 // keyingTransport is a packet based transport that supports key
 // changes. It need not be thread-safe. It should pass through
@@ -157,6 +161,20 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 	p, err := t.conn.readPacket()
 	if err != nil {
 		return nil, err
+	}
+
+	fmt.Printf("Roy: cbc is %f\n", CbcEnabled)
+	if CbcEnabled {
+		for {
+			if p[0] != msgIgnore {
+				break
+			}
+			fmt.Println("Roy: Catched place 01!!!")
+			p, err := t.conn.readPacket()
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	t.readSinceKex += uint64(len(p))

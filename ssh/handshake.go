@@ -446,10 +446,29 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 		fmt.Println("Roy: Catched place 05_6!!!")
 		return err
 	}
-	if packet, err := t.conn.readPacket(); err != nil {
-		fmt.Println("Roy: Catched place 05_7!!!")
+
+	packet, err := t.conn.readPacket()
+	if err != nil {
+		fmt.Println("Roy: Catched place 05_7_1!!!")
 		return err
-	} else if packet[0] != msgNewKeys {
+	}
+
+	//сомнительная попытка вставить проверку Cbc если работает
+	fmt.Printf("Roy: packet got is %d\n", packet[0])
+	if CbcEnabled {
+		for {
+			if packet[0] != msgIgnore {
+				break
+			}
+			fmt.Println("Roy: Catched place 88!!!")
+			packet, err = t.conn.readPacket()
+			if err != nil {
+				fmt.Println("Roy: Catched place 88_1!!!")
+				return err
+			}
+		}
+	}
+	if packet[0] != msgNewKeys {
 		fmt.Println("Roy: Catched place 05_8!!!")
 		return unexpectedMessageError(msgNewKeys, packet[0])
 	}

@@ -170,7 +170,7 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 				break
 			}
 			fmt.Println("Roy: Catched place 01!!!")
-			p, err := t.conn.readPacket()
+			p, err = t.conn.readPacket()
 			if err != nil {
 				return nil, err
 			}

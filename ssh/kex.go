@@ -11,7 +11,6 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"errors"
-	"fmt"
 	"golang.org/x/crypto/curve25519"
 	"io"
 	"math/big"

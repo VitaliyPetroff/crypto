@@ -90,10 +90,8 @@ func (group *dhGroup) diffieHellman(theirPublic, myPrivate *big.Int) (*big.Int, 
 func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handshakeMagics) (*kexResult, error) {
 	hashFunc := crypto.SHA1
 
-	fmt.Println("Roy: Catched place 11!!!")
 	x, err := rand.Int(randSource, group.p)
 	if err != nil {
-		fmt.Println("Roy: Catched place 11_1!!!")
 		return nil, err
 	}
 	X := new(big.Int).Exp(group.g, x, group.p)
@@ -101,42 +99,33 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 		X: X,
 	}
 	if err := c.writePacket(Marshal(&kexDHInit)); err != nil {
-		fmt.Println("Roy: Catched place 11_2!!!")
 		return nil, err
 	}
 
 	packet, err := c.readPacket()
 	if err != nil {
-		fmt.Println("Roy: Catched place 11_3!!!")
 		return nil, err
 	}
 
-	//сомнительная попытка вставить проверку Cbc если работает
-	fmt.Printf("Roy: packet got is %d\n", packet[0])
 	if CbcEnabled {
 		for {
 			if packet[0] != msgIgnore {
 				break
 			}
-			fmt.Println("Roy: Catched place 11_5!!!")
 			packet, err = c.readPacket()
 			if err != nil {
-				fmt.Println("Roy: Catched place 11_3!!!")
 				return nil, err
 			}
 		}
 	}
-	fmt.Printf("Roy: packet got is %d\n", packet[0])
 
 	var kexDHReply kexDHReplyMsg
 	if err = Unmarshal(packet, &kexDHReply); err != nil {
-		fmt.Println("Roy: Catched place 11_4!!!")
 		return nil, err
 	}
 
 	kInt, err := group.diffieHellman(kexDHReply.Y, x)
 	if err != nil {
-		fmt.Println("Roy: Catched place 11_X!!!")
 		return nil, err
 	}
 
@@ -149,7 +138,6 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 	marshalInt(K, kInt)
 	h.Write(K)
 
-	fmt.Println("Roy: Kex good exit!!!")
 	return &kexResult{
 		H:         h.Sum(nil),
 		K:         K,

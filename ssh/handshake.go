@@ -16,12 +16,12 @@ import (
 
 // support cbc, if set, support csc enabled.
 // All servers SSH_MSG_IGNORE messages will be ignored
-var CbcEnabled = true
+var CbcEnabled = false
 
 // debugHandshake, if set, prints messages sent and received.  Key
 // exchange messages are printed as if DH were used, so the debug
 // messages are wrong when using ECDH.
-const debugHandshake = true
+const debugHandshake = false
 
 // keyingTransport is a packet based transport that supports key
 // changes. It need not be thread-safe. It should pass through
@@ -126,20 +126,6 @@ func (t *handshakeTransport) readPacket() ([]byte, error) {
 		return nil, t.readError
 	}
 
-	// //сомнительная попытка вставить проверку Cbc если работает
-	// fmt.Printf("Roy: packet got is %d\n", p[0])
-	// if CbcEnabled {
-	// 	for {
-	// 		if p[0] != msgIgnore {
-	// 			break
-	// 		}
-	// 		fmt.Println("Roy: Catched place 10!!!")
-	// 		p, ok = <-t.incoming
-	// 		if !ok {
-	// 			return nil, t.readError
-	// 		}
-	// 	}
-	// }
 	return p, nil
 }
 
@@ -178,13 +164,11 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Roy: cbc is %f\n", CbcEnabled)
 	if CbcEnabled {
 		for {
 			if p[0] != msgIgnore {
 				break
 			}
-			fmt.Println("Roy: Catched place 01!!!")
 			p, err = t.conn.readPacket()
 			if err != nil {
 				return nil, err
@@ -211,7 +195,6 @@ func (t *handshakeTransport) readOnePacket() ([]byte, error) {
 	err = t.enterKeyExchangeLocked(p)
 	if err != nil {
 		// drop connection
-		fmt.Println("Roy: Catched place 05!!!")
 		t.conn.Close()
 		t.writeError = err
 	}
@@ -278,7 +261,6 @@ func (t *handshakeTransport) sendKexInit(isFirst keyChangeCategory) error {
 		if packet, err := t.readPacket(); err != nil {
 			return err
 		} else if packet[0] != msgNewKeys {
-			fmt.Println("Roy: Catched place 02!!!")
 			return unexpectedMessageError(msgNewKeys, packet[0])
 		}
 	}
@@ -374,13 +356,11 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	}
 	myInit, myInitPacket, err := t.sendKexInitLocked(subsequentKeyExchange)
 	if err != nil {
-		fmt.Println("Roy: Catched place 05_1!!!")
 		return err
 	}
 
 	otherInit := &kexInitMsg{}
 	if err := Unmarshal(otherInitPacket, otherInit); err != nil {
-		fmt.Println("Roy: Catched place 05_2!!!")
 		return err
 	}
 
@@ -403,7 +383,6 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 
 	algs, err := findAgreedAlgorithms(clientInit, serverInit)
 	if err != nil {
-		fmt.Println("Roy: Catched place 05_3!!!")
 		return err
 	}
 
@@ -412,7 +391,6 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 		// other side sent a kex message for the wrong algorithm,
 		// which we have to ignore.
 		if _, err := t.conn.readPacket(); err != nil {
-			fmt.Println("Roy: Catched place 05_4!!!")
 			return err
 		}
 	}
@@ -425,14 +403,11 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 	var result *kexResult
 	if len(t.hostKeys) > 0 {
 		result, err = t.server(kex, algs, &magics)
-		fmt.Println("Roy: Catched place 05_5_1!!!")
 	} else {
 		result, err = t.client(kex, algs, &magics)
-		fmt.Println("Roy: Catched place 05_5_2!!!")
 	}
 
 	if err != nil {
-		fmt.Println("Roy: Catched place 05_5!!!")
 		return err
 	}
 
@@ -443,33 +418,26 @@ func (t *handshakeTransport) enterKeyExchangeLocked(otherInitPacket []byte) erro
 
 	t.conn.prepareKeyChange(algs, result)
 	if err = t.conn.writePacket([]byte{msgNewKeys}); err != nil {
-		fmt.Println("Roy: Catched place 05_6!!!")
 		return err
 	}
 
 	packet, err := t.conn.readPacket()
 	if err != nil {
-		fmt.Println("Roy: Catched place 05_7_1!!!")
 		return err
 	}
 
-	//сомнительная попытка вставить проверку Cbc если работает
-	fmt.Printf("Roy: packet got is %d\n", packet[0])
 	if CbcEnabled {
 		for {
 			if packet[0] != msgIgnore {
 				break
 			}
-			fmt.Println("Roy: Catched place 88!!!")
 			packet, err = t.conn.readPacket()
 			if err != nil {
-				fmt.Println("Roy: Catched place 88_1!!!")
 				return err
 			}
 		}
 	}
 	if packet[0] != msgNewKeys {
-		fmt.Println("Roy: Catched place 05_8!!!")
 		return unexpectedMessageError(msgNewKeys, packet[0])
 	}
 
@@ -489,32 +457,26 @@ func (t *handshakeTransport) server(kex kexAlgorithm, algs *algorithms, magics *
 }
 
 func (t *handshakeTransport) client(kex kexAlgorithm, algs *algorithms, magics *handshakeMagics) (*kexResult, error) {
-	fmt.Println("Roy: Catched place 10!!!")
 	result, err := kex.Client(t.conn, t.config.Rand, magics)
 	if err != nil {
-		fmt.Println("Roy: Catched place 10_1!!!")
 		return nil, err
 	}
 
 	hostKey, err := ParsePublicKey(result.HostKey)
 	if err != nil {
-		fmt.Println("Roy: Catched place 10_2!!!")
 		return nil, err
 	}
 
 	if err := verifyHostKeySignature(hostKey, result); err != nil {
-		fmt.Println("Roy: Catched place 10_3!!!")
 		return nil, err
 	}
 
 	if t.hostKeyCallback != nil {
 		err = t.hostKeyCallback(t.dialAddress, t.remoteAddr, hostKey)
 		if err != nil {
-			fmt.Println("Roy: Catched place 10_4!!!")
 			return nil, err
 		}
 	}
 
-	fmt.Println("Roy: Client good exit!!!")
 	return result, nil
 }
